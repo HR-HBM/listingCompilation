@@ -41,70 +41,45 @@ chrome_options.add_experimental_option("detach", True)
 user_agent = get_random_user_agent()
 chrome_options.add_argument(f"user-agent={user_agent}")
 
-# # proxy = get_random_proxy()
-# chrome_options.add_argument('--proxy-server=http://72.10.160.90:26279')
-
 driver = webdriver.Chrome(options=chrome_options)
 
-maxLink = dataframe1.max_row
-currentLinkIndex = 4281
-while currentLinkIndex <= maxLink:
+maxLink = dataframe1.max_row +1
+currentLinkIndex = 704
+while currentLinkIndex == maxLink:
 
     driver.get(f"{links_list[currentLinkIndex]}")
 
-    wait = WebDriverWait(driver, 10)
-    item_data = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='finder-profile']/div/div/section/div/div/div[2]/div[5]/button/div/span")))
-
-    driver.execute_script("arguments[0].click();", item_data)
-
     time.sleep(2)
 
-    name_text = ""
-    country_text = ""
-    email_text = ""
-    number_text = ""
-    business_area_text = ""
-    website_text = ""
+    companyName = ""
+    category = ""
+    category_list = []
 
     try:
-        name = driver.find_element(By.XPATH, value="//*[@id='profile-title']/h1")
-        name_text = name.text
+
+        html_list = driver.find_element(BY.XPATH, value="//*[@id='finder-products']/div/div/section/div[2]/div/div/div[1]/ul")
+        items = html_list.find_elements_by_tag_name("li")
+        for item in items:
+        
+            text = item.text
+            category_list.append(text)
+            category = ", ".joined(category_list)
+            print(category)
+
+
+        # name = driver.find_element(By.XPATH, value="//*[@id='profile-title']/h1")
+        # name_text = name.text
     except:
         pass
 
     try:
-        country = driver.find_element(By.XPATH, value="//*[@id='profile-business-data']/div[1]/div[1]/div/div[2]")
-        country_text = country.text
+        companyName = driver.find_element(By.XPATH, value="//*[@id='profile-business-data']/div[1]/div[1]/div/div[2]")
+        name = companyName.text
     except:
         pass
 
-    try:
-        email = driver.find_element(By.XPATH, value="//*[@id='profile-business-data']/div[1]/div[2]/div[1]/div[1]")
-        email_text = email.text
-    except:
-        pass
 
-    try:
-        number = driver.find_element(By.XPATH, value="//*[@id='profile-business-data']/div[1]/div[2]/div[1]/div[2]")
-        number_text = number.text
-    except:
-        pass
-
-    try:
-        business_area = driver.find_element(By.XPATH,
-                                            value="//*[@id='profile-business-data']/div[2]/div/table/tbody/tr[3]/td[2]")
-        business_area_text = business_area.text
-    except:
-        pass
-
-    try:
-        website = driver.find_element(By.XPATH,
-                                      value="//*[@id='profile-business-data']/div[1]/div[2]/div[1]/div[3]/div[2]/ul/li/a")
-        website_text = website.text
-    except:
-        pass
-
-    driver.execute_script("window.open('https://docs.google.com/forms/d/e/1FAIpQLSeABXtU62XVghsKuVzW-aGOazLQE4Rt-Ub8ZOkKbOosAOrTnw/viewform', '_blank');")
+    driver.execute_script("window.open('https://docs.google.com/forms/d/1AU00wx_0nrh6wVZi5IoRivx5RKCnOPIp6tQ9GzaZloA/viewform?chromeless=1&edit_requested=true', '_blank');")
     wait = WebDriverWait(driver, 10)
 
 
@@ -115,23 +90,11 @@ while currentLinkIndex <= maxLink:
 
     print("form loaded")
 
-    company_name = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div[1]/input")
-    company_name.send_keys(name_text)
+    company_name = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[1]/div/div/div[2]/div/div[1]/div[2]/textarea")
+    company_name.send_keys(name)
 
-    company_country = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/input")
-    company_country.send_keys(country_text)
-
-    company_category = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[3]/div/div/div[2]/div/div[1]/div[2]/textarea")
-    company_category.send_keys(business_area_text)
-
-    company_number = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[4]/div/div/div[2]/div/div[1]/div/div[1]/input")
-    company_number.send_keys(number_text)
-
-    company_email = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[5]/div/div/div[2]/div/div[1]/div/div[1]/input")
-    company_email.send_keys(email_text)
-
-    company_website = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[6]/div/div/div[2]/div/div[1]/div/div[1]/input")
-    company_website.send_keys(website_text)
+    categories = driver.find_element(By.XPATH,value="//*[@id='mG61Hd']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/div[1]/div[2]/textarea")
+    categories.send_keys(category)
 
     submit = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='mG61Hd']/div[2]/div/div[3]/div[1]/div[1]/div")))
 
@@ -143,9 +106,8 @@ while currentLinkIndex <= maxLink:
     print(currentLinkIndex)
 
     currentLinkIndex += 1
-    index_limit = [5, 10, 15, 20, 25]
-    if currentLinkIndex % random.choice(index_limit) == 0:
-        wait = WebDriverWait(driver, 10)
+   
+    if currentLinkIndex % 15 == 0:
         print("break time")
         time.sleep(20)
 
